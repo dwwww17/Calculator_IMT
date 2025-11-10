@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kalkulator Gizi</title>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f8bbd0, #ce93d8);
+    margin: 0;
+    padding: 0;
+    color: #4a148c;
+  }
+  .container {
+    max-width: 500px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    padding: 30px;
+    margin: 50px auto;
+    text-align: center;
+  }
+  button {
+    background-color: #ab47bc;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  button:hover {
+    background-color: #8e24aa;
+  }
+  input, select {
+    width: 80%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 10px;
+    border: 1px solid #ce93d8;
+  }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="container" id="page1">
+  <h2>✨ Halo, Selamat Datang di Kalkulator Gizi ✨</h2>
+  <p>Temukan informasi gizi sesuai kebutuhanmu!</p>
+  <button onclick="nextPage(2)">Mulai ➜</button>
+</div>
+
+<div class="container hidden" id="page2">
+  <h3>Apa yang ingin Anda ketahui?</h3>
+  <button onclick="setChoice('bmi')">Status Gizi</button>
+  <button onclick="setChoice('ideal')">Berat Badan Ideal</button>
+  <button onclick="setChoice('energi')">Kebutuhan Energi Sehari</button>
+</div>
+
+<div class="container hidden" id="page3">
+  <h3>Masukkan Data Anda</h3>
+  <select id="gender">
+    <option value="L">Laki-laki</option>
+    <option value="P">Perempuan</option>
+  </select><br>
+  <input type="number" id="height" placeholder="Tinggi badan (cm)" /><br>
+  <input type="number" id="weight" placeholder="Berat badan (kg)" /><br>
+  <select id="activity">
+    <option value="1.2">Aktivitas Ringan</option>
+    <option value="1.55">Aktivitas Sedang</option>
+    <option value="1.9">Aktivitas Berat</option>
+  </select><br>
+  <button onclick="calculate()">Lihat Hasil ➜</button>
+</div>
+
+<div class="container hidden" id="page4">
+  <h3>Hasil Perhitungan</h3>
+  <div id="result"></div>
+  <button onclick="reset()">Kembali ke Awal</button>
+</div>
+
+<script>
+  let userChoice = "";
+
+  function nextPage(num) {
+    document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
+    document.getElementById('page' + num).classList.remove('hidden');
+  }
+
+  function setChoice(choice) {
+    userChoice = choice;
+    nextPage(3);
+  }
+
+  function calculate() {
+    const gender = document.getElementById("gender").value;
+    const height = parseFloat(document.getElementById("height").value);
+    const weight = parseFloat(document.getElementById("weight").value);
+    const activity = parseFloat(document.getElementById("activity").value);
+
+    if (!height || !weight) {
+      alert("Harap isi tinggi dan berat badan.");
+      return;
+    }
+
+    const heightM = height / 100;
+    const bmi = weight / (heightM * heightM);
+    const ideal = 22 * heightM * heightM;
+    const bmr = gender === "L"
+      ? 88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * 25)
+      : 447.6 + (9.25 * weight) + (3.1 * height) - (4.33 * 25);
+    const tdee = bmr * activity;
+
+    let resultText = "";
+
+    if (userChoice === "bmi") {
+      let category = "";
+      if (bmi < 18.5) category = "Kurus";
+      else if (bmi < 25) category = "Normal";
+      else if (bmi < 30) category = "Gemuk";
+      else category = "Obesitas";
+      resultText = `IMT Anda: <b>${bmi.toFixed(1)}</b> (${category})`;
+    } else if (userChoice === "ideal") {
+      resultText = `Berat badan ideal Anda adalah <b>${ideal.toFixed(1)} kg</b>.`;
+    } else if (userChoice === "energi") {
+      resultText = `Kebutuhan energi harian Anda sekitar <b>${tdee.toFixed(0)} kkal</b>.`;
+    }
+
+    document.getElementById("result").innerHTML = resultText;
+    nextPage(4);
+  }
+
+  function reset() {
+    nextPage(1);
+  }
+</script>
+</body>
+</html>
